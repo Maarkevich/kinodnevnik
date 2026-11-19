@@ -1,0 +1,157 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-back-button slot="start" defaultHref="/diary" text="Назад"></ion-back-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container" *ngIf="loading">
+    <div class="kd-skeleton kd-backdrop-skeleton"></div>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <div class="kd-key-hint" *ngIf="failed">
+      <strong>Не удалось загрузить карточку</strong>
+      <p *ngIf="noKey">Ключ TMDb не задан — без него поиск новых тайтлов недоступен.</p>
+      <p *ngIf="!noKey">Проверьте соединение. Уже сделанные записи это не затрагивает.</p>
+      <ion-button size="small" routerLink="/settings" *ngIf="noKey">Добавить ключ</ion-button>
+    </div>
+
+    <ng-container *ngIf="snapshot as s">
+      <div class="kd-hero kd-media-scrim">
+        <img *ngIf="s.backdrop" [src]="poster.url(s.backdrop, 'backdrop')" alt="" class="kd-hero-image" />
+        <div class="kd-hero-content">
+          <h1 class="kd-hero-title">{{ title.primary }}</h1>
+          <div class="kd-hero-original" *ngIf="title.secondary">{{ title.secondary }}</div>
+          <div class="kd-hero-meta">
+            <span *ngIf="year">{{ year }}</span>
+            <span>{{ s.media_type === 'tv' ? 'сериал' : 'фильм' }}</span>
+            <span *ngIf="communityRating">{{ communityRating }} / 10</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="kd-body">
+        <div class="kd-poster-col">
+          <img *ngIf="s.poster; else noPoster" [src]="poster.url(s.poster, 'poster')" [alt]="title.primary" class="kd-poster" />
+          <ng-template #noPoster>
+            <div class="kd-poster kd-poster-fallback">{{ poster.initial(title.primary) }}</div>
+          </ng-template>
+        </div>
+
+        <div class="kd-info-col">
+          <ion-button class="kd-log-btn" (click)="log()">
+            {{ logsForTitle > 0 ? 'Записать ещё раз' : 'Записать просмотр' }}
+          </ion-button>
+
+          <p class="kd-logged-note" *ngIf="logsForTitle > 0">
+            В дневнике: {{ locale.plural(logsForTitle, { one: 'запись', few: 'записи', many: 'записей' }) }}
+          </p>
+
+          <div class="kd-partial-note" *ngIf="partial">
+            Данные из сохранённого снимка — сеть не ответила.
+          </div>
+
+          <dl class="kd-facts">
+            <div *ngIf="releaseText">
+              <dt>Премьера</dt>
+              <dd>{{ releaseText }}</dd>
+            </div>
+            <div *ngIf="s.original_language">
+              <dt>Язык оригинала</dt>
+              <dd>{{ locale.languageName(s.original_language) }}</dd>
+            </div>
+            <div *ngIf="votes">
+              <dt>Оценок в TMDb</dt>
+              <dd>{{ votes }}</dd>
+            </div>
+            <div *ngIf="details?.runtimeMinutes">
+              <dt>Длительность</dt>
+              <dd>{{ locale.duration(details!.runtimeMinutes ?? 0) }}</dd>
+            </div>
+            <div *ngIf="details?.seasons">
+              <dt>Сезонов</dt>
+              <dd>{{ details?.seasons }}</dd>
+            </div>
+            <div *ngIf="s.production_countries?.length">
+              <dt>Страны</dt>
+              <dd>{{ s.production_countries.join(', ') }}</dd>
+            </div>
+          </dl>
+
+          <div class="kd-genres" *ngIf="s.genres?.length">
+            <span class="kd-genre" *ngFor="let g of s.genres">{{ g }}</span>
+          </div>
+
+          <div class="kd-obscurity" *ngIf="details?.ruTitleSource === 'shikimori'">
+            Русское название взято из Shikimori.
+            <button type="button" class="kd-linkbtn" (click)="saveManualTitle()">Исправить</button>
+          </div>
+          <div class="kd-obscurity" *ngIf="!s.titleRu && details?.ruTitleSource !== 'shikimori'">
+            Русского названия в источнике нет.
+            <button type="button" class="kd-linkbtn" (click)="saveManualTitle()">Вписать своё</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="kd-section" *ngIf="details?.overview">
+        <h2 class="kd-title">Описание</h2>
+        <p class="kd-overview">{{ details?.overview }}</p>
+      </section>
+
+      <!-- «Где смотреть»: блок целиком отсутствует, если RU-данных нет -->
+      <section class="kd-section" *ngIf="details?.where as where">
+        <h2 class="kd-title">Где смотреть</h2>
+
+        <div class="kd-providers" *ngIf="where.subscription.length">
+          <div class="kd-eyebrow">Подписка</div>
+          <div class="kd-provider-row">
+            <div *ngFor="let p of where.subscription" class="kd-provider">
+              <img *ngIf="p.logo" [src]="p.logo" [alt]="p.name" loading="lazy" />
+              <span>{{ p.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kd-providers" *ngIf="where.purchase.length">
+          <div class="kd-eyebrow">Покупка</div>
+          <div class="kd-provider-row">
+            <div *ngFor="let p of where.purchase" class="kd-provider">
+              <img *ngIf="p.logo" [src]="p.logo" [alt]="p.name" loading="lazy" />
+              <span>{{ p.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kd-providers" *ngIf="where.rent.length">
+          <div class="kd-eyebrow">Аренда</div>
+          <div class="kd-provider-row">
+            <div *ngFor="let p of where.rent" class="kd-provider">
+              <img *ngIf="p.logo" [src]="p.logo" [alt]="p.name" loading="lazy" />
+              <span>{{ p.name }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="kd-section" *ngIf="details?.directors?.length">
+        <h2 class="kd-title">Режиссёр</h2>
+        <p class="kd-people">{{ details?.directors?.join(', ') }}</p>
+      </section>
+
+      <section class="kd-section" *ngIf="details?.cast?.length">
+        <h2 class="kd-title">В ролях</h2>
+        <div class="kd-cast">
+          <div *ngFor="let c of details?.cast" class="kd-cast-person">
+            <div class="kd-cast-photo">
+              <img *ngIf="c.profile" [src]="poster.url(c.profile, 'profile')" [alt]="c.name" loading="lazy" />
+              <div *ngIf="!c.profile" class="kd-poster-fallback">{{ c.name.charAt(0) }}</div>
+            </div>
+            <div class="kd-cast-name">{{ c.name }}</div>
+            <div class="kd-cast-role">{{ c.character }}</div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </ng-container>
+</ion-content>

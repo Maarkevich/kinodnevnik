@@ -1,0 +1,61 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-title>Поиск</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <div class="kd-search-field">
+      <input
+        #input
+        class="kd-input"
+        type="search"
+        inputmode="search"
+        autocomplete="off"
+        enterkeyhint="search"
+        [value]="query"
+        (input)="onInput($any($event.target).value)"
+        placeholder="Фильмы, сериалы, актёры…"
+        aria-label="Поиск по каталогу TMDb"
+      />
+      <ion-button *ngIf="query" fill="clear" size="small" (click)="clear()" aria-label="Очистить">
+        <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="kd-recent" *ngIf="!searched && recent.length">
+      <div class="kd-eyebrow">Недавние запросы</div>
+      <div class="kd-chips">
+        <button *ngFor="let r of recent" type="button" class="kd-chip" (click)="useRecent(r)">{{ r }}</button>
+      </div>
+    </div>
+
+    <div class="kd-key-hint" *ngIf="error === 'Ключ TMDb не задан'">
+      <strong>Нужен ключ TMDb</strong>
+      <p>Поиск по каталогу недоступен без ключа.</p>
+      <ion-button size="small" routerLink="/settings">Добавить ключ</ion-button>
+    </div>
+
+    <div class="kd-skeleton-grid" *ngIf="loading">
+      <div class="kd-skeleton" *ngFor="let i of [1,2,3,4,5,6]"></div>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="kd-grid" *ngIf="items.length > 0">
+        <div *ngFor="let item of items; trackBy: track" class="kd-result">
+          <kd-media-card [snapshot]="item"></kd-media-card>
+          <ion-button size="small" fill="outline" class="kd-result-log" (click)="log(item, $event)">
+            Записать
+          </ion-button>
+        </div>
+      </div>
+
+      <kd-empty-state
+        *ngIf="searched && items.length === 0 && !error"
+        [title]="query ? 'Ничего не нашлось' : 'Начните печатать'"
+        [text]="query ? 'Попробуйте другое написание или оригинальное название.' : ''"
+      ></kd-empty-state>
+    </ng-container>
+  </div>
+</ion-content>

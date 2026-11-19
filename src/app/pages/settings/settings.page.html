@@ -1,0 +1,194 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-back-button slot="start" defaultHref="/profile" text="Назад"></ion-back-button>
+    <ion-title>Настройки</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container kd-container--narrow">
+    <!-- ── Ключ TMDb ───────────────────────────────────────────── -->
+    <section class="kd-card">
+      <h2 class="kd-card-title">Данные TMDb · Ключ API</h2>
+
+      <p class="kd-hint">
+        Ключ нужен, чтобы приложение находило фильмы. Он хранится только на этом
+        устройстве и уходит только на <code>api.themoviedb.org</code>.
+      </p>
+
+      <div class="kd-key-row">
+        <input
+          class="kd-input"
+          [type]="'password'"
+          [value]="keyInput"
+          (input)="keyInput = $any($event.target).value"
+          placeholder="API Key (v3 auth)"
+          autocomplete="off"
+          aria-label="Ключ API TMDb"
+        />
+      </div>
+
+      <div class="kd-actions">
+        <ion-button (click)="saveKey()" [disabled]="busy">Сохранить</ion-button>
+        <ion-button fill="outline" (click)="checkKey()" [disabled]="checking || busy">
+          {{ checking ? 'Проверяю…' : 'Проверить' }}
+        </ion-button>
+      </div>
+
+      <p
+        class="kd-status"
+        *ngIf="keyStatus.message"
+        [class.is-ok]="keyStatus.ok === true"
+        [class.is-err]="keyStatus.ok === false"
+      >
+        {{ keyStatus.message }}
+      </p>
+
+      <p class="kd-hint kd-hint--small">
+        Получить ключ:
+        <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener noreferrer">
+          themoviedb.org/settings/api
+        </a>
+        . Это клиентское приложение без сервера, поэтому ключ виден в сетевых
+        запросах браузера — так устроено любое подобное PWA.
+      </p>
+    </section>
+
+    <!-- ── Отображение ─────────────────────────────────────────── -->
+    <section class="kd-card">
+      <h2 class="kd-card-title">Отображение</h2>
+
+      <label class="kd-field">
+        <span>Оригинальные названия</span>
+        <select class="kd-select" [value]="current.originalTitleMode" (change)="setOriginalMode($any($event.target).value)">
+          <option value="mismatch">Только когда отличаются</option>
+          <option value="always">Всегда</option>
+          <option value="never">Никогда</option>
+        </select>
+      </label>
+
+      <ion-item class="kd-toggle">
+        <ion-label>Затенять просмотренное</ion-label>
+        <ion-toggle [checked]="current.fadeWatched" (ionChange)="setFade($event.detail.checked)"></ion-toggle>
+      </ion-item>
+
+      <ion-item class="kd-toggle">
+        <ion-label>Показывать материалы 18+</ion-label>
+        <ion-toggle [checked]="current.includeAdult" (ionChange)="setAdult($event.detail.checked)"></ion-toggle>
+      </ion-item>
+
+      <ion-item class="kd-toggle" *ngIf="hapticsSupported">
+        <ion-label>Виброотклик</ion-label>
+        <ion-toggle [checked]="current.hapticsEnabled" (ionChange)="setHaptics($event.detail.checked)"></ion-toggle>
+      </ion-item>
+    </section>
+
+    <!-- ── Синхронизация ───────────────────────────────────────── -->
+    <section class="kd-card">
+      <h2 class="kd-card-title">Синхронизация</h2>
+
+      <p class="kd-hint">
+        Импорт работает как слияние: добавляется только то, чего нет, повторный
+        импорт того же файла не создаёт дублей, а удалённое не возвращается.
+      </p>
+
+      <div class="kd-actions">
+        <ion-button (click)="exportBackup()" [disabled]="busy">Выгрузить файл</ion-button>
+
+        <label class="kd-file-btn">
+          <span>{{ busy ? 'Занято…' : 'Загрузить файл' }}</span>
+          <input
+            type="file"
+            accept=".gz,.json,application/gzip,application/json"
+            [disabled]="busy"
+            (change)="importBackup($event)"
+          />
+        </label>
+      </div>
+
+      <p class="kd-hint kd-hint--small" *ngIf="lastExport">Последняя выгрузка: {{ lastExport }}</p>
+
+      <div class="kd-report" *ngIf="report">
+        <div>Добавлено: <strong class="kd-num">{{ report.added }}</strong></div>
+        <div>Обновлено: <strong class="kd-num">{{ report.updated }}</strong></div>
+        <div>Уже было: <strong class="kd-num">{{ report.identical }}</strong></div>
+        <div>Отклонено после удаления: <strong class="kd-num">{{ report.blockedByTombstone }}</strong></div>
+        <div>Конфликтов: <strong class="kd-num">{{ report.conflicts.length }}</strong></div>
+
+        <ul class="kd-conflicts" *ngIf="report.conflicts.length">
+          <li *ngFor="let c of report.conflicts">
+            {{ c.title }} — {{ reasonLabel(c.reason) }}
+          </li>
+        </ul>
+
+        <ion-button size="small" fill="outline" (click)="undoImport()" [disabled]="busy">
+          Отменить импорт
+        </ion-button>
+      </div>
+    </section>
+
+    <!-- ── Хранилище ───────────────────────────────────────────── -->
+    <section class="kd-card">
+      <h2 class="kd-card-title">Хранилище</h2>
+      <p class="kd-hint">Данные не покидают устройство.</p>
+
+      <dl class="kd-store">
+        <div><dt>Занято</dt><dd>{{ quota.bytes(storage.usage) }}</dd></div>
+        <div><dt>Доступно</dt><dd>{{ quota.bytes(storage.quota) }}</dd></div>
+        <div>
+          <dt>Закреплено</dt>
+          <dd [class.is-warn]="storage.persisted === false">
+            {{ storage.persisted === true ? 'да' : storage.persisted === false ? 'нет' : 'неизвестно' }}
+          </dd>
+        </div>
+      </dl>
+
+      <div class="kd-actions">
+        <ion-button size="small" fill="outline" (click)="persist()" *ngIf="storage.persisted !== true">
+          Закрепить
+        </ion-button>
+        <ion-button size="small" fill="outline" (click)="clearApiCache()">Очистить кэш TMDb</ion-button>
+      </div>
+
+      <p class="kd-hint kd-hint--small" *ngIf="storage.persisted !== true">
+        На iPhone закрепление не поддерживается браузером — вместо него добавьте
+        приложение на домашний экран, иначе система может очистить данные.
+      </p>
+    </section>
+
+    <!-- ── Ручные названия ─────────────────────────────────────── -->
+    <section class="kd-card" *ngIf="overrides.length">
+      <h2 class="kd-card-title">Исправленные названия</h2>
+      <ul class="kd-overrides">
+        <li *ngFor="let o of overrides">
+          <span>{{ o.titleRu }}</span>
+          <button type="button" class="kd-linkbtn" (click)="removeOverride(o)">Убрать</button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── О приложении ────────────────────────────────────────── -->
+    <section class="kd-card">
+      <h2 class="kd-card-title">О приложении</h2>
+      <p class="kd-version">Версия {{ version.app }} · сборка {{ version.sha }}</p>
+
+      <p class="kd-hint kd-hint--small">
+        «Кинодневник» — форк проекта
+        <a href="https://github.com/r-shafi/open-movie-tracker" target="_blank" rel="noopener noreferrer">
+          Open Movie Tracker
+        </a>
+        (MIT © 2024 R. Shafi).
+      </p>
+
+      <p class="kd-hint kd-hint--small">
+        Данные и изображения предоставлены
+        <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">The Movie Database (TMDb)</a>.
+        Это приложение не одобрено и не ассоциировано с TMDb.
+      </p>
+
+      <p class="kd-hint kd-hint--small">
+        Почта, адрес, имя и сайт из загружаемых файлов никогда не читаются и не сохраняются.
+      </p>
+    </section>
+  </div>
+</ion-content>

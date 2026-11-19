@@ -1,0 +1,86 @@
+.kd-person-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.kd-person-photo {
+  flex: 0 0 96px;
+  width: 96px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--kd-r-md);
+  overflow: hidden;
+  background: var(--kd-bg-sunken);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.kd-person-meta {
+  margin: 2px 0;
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-secondary);
+}
+
+.kd-bio {
+  font-size: var(--kd-fs-body);
+  line-height: var(--kd-lh-body);
+  color: var(--kd-text-secondary);
+  margin-bottom: 24px;
+}
+
+.kd-credits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.kd-credit a {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: var(--kd-r-md);
+  background: var(--kd-bg-elevated);
+  border: 1px solid var(--kd-border);
+  text-decoration: none;
+  color: inherit;
+}
+
+.kd-credit img {
+  width: 44px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--kd-r-sm);
+}
+
+.kd-credit-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kd-credit-title {
+  font-size: var(--kd-fs-small);
+  font-weight: 700;
+}
+
+.kd-credit-role,
+.kd-credit-year {
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+}
+
+.kd-hint { color: var(--kd-text-secondary); }
+
+.kd-key-hint {
+  padding: 16px;
+  border-radius: var(--kd-r-lg);
+  background: var(--kd-bg-elevated);
+  border: 1px solid var(--kd-border);
+}

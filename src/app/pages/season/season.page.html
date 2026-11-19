@@ -1,0 +1,54 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-back-button slot="start" defaultHref="/tv" text="Назад"></ion-back-button>
+    <ion-title>Сезон {{ seasonNumber }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <p class="kd-hint" *ngIf="loading">Загружаем серии…</p>
+
+    <div class="kd-key-hint" *ngIf="failed">
+      <strong>Список серий не загрузился</strong>
+      <p>Проверьте соединение или ключ TMDb.</p>
+    </div>
+
+    <ng-container *ngIf="!loading && !failed">
+      <div class="kd-season-head">
+        <h1 class="kd-title">{{ showTitle }}</h1>
+        <div class="kd-progress">
+          <div class="kd-progress-bar" [style.width.%]="progressPct"></div>
+        </div>
+        <p class="kd-progress-text">
+          {{ watchedCount }} из {{ episodes.length }} · {{ progressPct }}%
+        </p>
+      </div>
+
+      <article
+        *ngFor="let ep of episodes; trackBy: trackById"
+        class="kd-episode"
+        [class.is-watched]="ep.watched"
+        (click)="toggle(ep)"
+      >
+        <div class="kd-episode-still">
+          <img *ngIf="ep.still" [src]="ep.still" [alt]="ep.name" loading="lazy" />
+          <div *ngIf="!ep.still" class="kd-poster-fallback">{{ ep.id }}</div>
+        </div>
+        <div class="kd-episode-body">
+          <div class="kd-episode-title">
+            {{ ep.id }}. {{ ep.name }}
+            <span class="kd-episode-runtime" *ngIf="ep.runtime">{{ ep.runtime }} мин</span>
+          </div>
+          <p class="kd-episode-overview" *ngIf="ep.overview">{{ ep.overview }}</p>
+        </div>
+        <ion-checkbox
+          [checked]="ep.watched"
+          (click)="$event.stopPropagation()"
+          (ionChange)="toggle(ep)"
+          [aria-label]="&quot;Серия &quot; + ep.id + (ep.watched ? &quot; просмотрена&quot; : &quot; не просмотрена&quot;)"
+        ></ion-checkbox>
+      </article>
+    </ng-container>
+  </div>
+</ion-content>

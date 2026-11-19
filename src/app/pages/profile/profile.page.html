@@ -1,0 +1,200 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-title>Профиль</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/settings" aria-label="Настройки">
+        <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <div class="kd-profile-head">
+      <h1 class="kd-hero">{{ name }}</h1>
+      <p class="kd-bio" *ngIf="settings.bio">{{ settings.bio }}</p>
+      <ion-button size="small" fill="clear" routerLink="/edit-profile">Изменить профиль</ion-button>
+    </div>
+
+    <div class="kd-tabs" role="tablist" aria-label="Разделы аналитики">
+      <button
+        *ngFor="let t of tabs"
+        type="button"
+        role="tab"
+        class="kd-tab-pill"
+        [class.is-active]="tab === t.id"
+        [attr.aria-selected]="tab === t.id"
+        (click)="setTab(t.id)"
+      >
+        {{ t.label }}
+      </button>
+    </div>
+
+    <label class="kd-year-filter">
+      <span class="kd-eyebrow">Период</span>
+      <select class="kd-select" [value]="year" (change)="setYear($event)" aria-label="Фильтр по году">
+        <option value="all">За всё время</option>
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+    </label>
+
+    <ng-container *ngIf="!loading">
+      <!-- ── Обзор ─────────────────────────────────────────────── -->
+      <ng-container [ngSwitch]="tab">
+        <div *ngSwitchCase="'overview'" class="kd-metrics">
+          <kd-metric-card
+            label="Просмотрено"
+            [value]="summary.completed"
+            [coverage]="{ sample: summary.dated, total: summary.completed }"
+          ></kd-metric-card>
+
+          <kd-metric-card
+            label="Средняя оценка"
+            [value]="summary.averageRating.value"
+            [coverage]="summary.averageRating.coverage"
+            [note]="summary.averageRating.insufficient ? 'Нужно минимум ' + limits.averageRating + ' оценки' : ''"
+          ></kd-metric-card>
+
+          <kd-metric-card
+            label="Пересмотров"
+            [value]="summary.rewatchCount"
+            [coverage]="{ sample: summary.rewatchCount, total: summary.completed }"
+          ></kd-metric-card>
+
+          <kd-metric-card
+            label="Индекс нишевости"
+            [value]="summary.obscurity.value"
+            [approximate]="true"
+            [coverage]="summary.obscurity.coverage"
+            [note]="summary.obscurity.insufficient ? 'Мало данных об оценках' : ''"
+          ></kd-metric-card>
+
+          <kd-metric-card
+            label="Возраст фильма при просмотре"
+            [value]="summary.ageAtViewing.value"
+            [approximate]="true"
+            [coverage]="summary.ageAtViewing.coverage"
+          ></kd-metric-card>
+
+          <kd-metric-card
+            label="Расхождение с TMDb"
+            [value]="summary.crowdDelta.value"
+            [approximate]="true"
+            [coverage]="{ sample: summary.crowdSample, total: summary.ratedCount }"
+          ></kd-metric-card>
+
+          <div class="kd-undated" *ngIf="summary.undated > 0">
+            {{ locale.plural(summary.undated, { one: 'запись', few: 'записи', many: 'записей' }) }} без точной даты
+            — они не участвуют в расчётах по периодам.
+          </div>
+        </div>
+
+        <!-- ── Оценки ──────────────────────────────────────────── -->
+        <div *ngSwitchCase="'ratings'" class="kd-section">
+          <!-- Вырожденный график сворачиваем в плитку, а не рисуем пустоту -->
+          <kd-metric-card
+            *ngIf="summary.histogramDegenerate; else showHistogram"
+            label="Оценки"
+            [value]="summary.averageRating.value"
+            [coverage]="summary.averageRating.coverage"
+            note="Все оценки одинаковы — график неинформативен."
+          ></kd-metric-card>
+
+          <ng-template #showHistogram>
+            <h2 class="kd-title">Распределение оценок</h2>
+            <div class="kd-histogram" role="img" [attr.aria-label]="'Гистограмма оценок, ' + summary.ratedCount + ' значений'">
+              <div *ngFor="let b of summary.histogram" class="kd-hbar-col">
+                <div class="kd-hbar-track">
+                  <div class="kd-hbar" [style.height.%]="b.count / maxHistogram * 100"
+                       [attr.aria-label]="b.label + ': ' + b.count"></div>
+                </div>
+                <div class="kd-hbar-label">{{ b.label }}</div>
+                <div class="kd-hbar-count" *ngIf="b.count">{{ b.count }}</div>
+              </div>
+            </div>
+            <p class="kd-coverage">
+              Пик — {{ summary.peakScore }} · выборка {{ locale.integer(summary.ratedCount) }} из
+              {{ locale.integer(summary.completed) }}
+            </p>
+          </ng-template>
+        </div>
+
+        <!-- ── Активность ──────────────────────────────────────── -->
+        <div *ngSwitchCase="'activity'" class="kd-section">
+          <h2 class="kd-title">Темп за 12 месяцев</h2>
+          <div class="kd-pace">
+            <div *ngFor="let p of summary.pace" class="kd-pace-col">
+              <div class="kd-pace-track">
+                <div class="kd-pace-bar" [style.height.%]="p.count / maxPace * 100"></div>
+              </div>
+              <div class="kd-pace-label">{{ p.label }}</div>
+            </div>
+          </div>
+
+          <h2 class="kd-title kd-title--gap">Активность за 365 дней</h2>
+          <div class="kd-heatmap" role="img" aria-label="Тепловая карта за год">
+            <div
+              *ngFor="let c of heatmap"
+              class="kd-heat-cell"
+              [attr.data-level]="c.level"
+              [title]="c.label + ': ' + c.count"
+            ></div>
+          </div>
+          <div class="kd-heat-legend">
+            <span>меньше</span>
+            <i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i>
+            <span>больше</span>
+          </div>
+        </div>
+
+        <!-- ── Люди ────────────────────────────────────────────── -->
+        <div *ngSwitchCase="'people'" class="kd-section">
+          <h2 class="kd-title">Режиссёры</h2>
+          <kd-empty-state *ngIf="!summary.directors.length" title="Пока нечего показать"
+            text="Добавьте фильмы с указанием режиссёра — список появится после трёх записей."
+          ></kd-empty-state>
+          <ol class="kd-rank">
+            <li *ngFor="let d of summary.directors">
+              <span class="kd-rank-name">{{ d.name }}</span>
+              <span class="kd-rank-meta">{{ locale.integer(d.count) }} · {{ locale.rating(d.avgRating) }}</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- ── Жанры и страны ──────────────────────────────────── -->
+        <div *ngSwitchCase="'places'" class="kd-section">
+          <h2 class="kd-title">Жанры</h2>
+          <ol class="kd-rank">
+            <li *ngFor="let g of summary.genres">
+              <span class="kd-rank-name">{{ g.name }}</span>
+              <span class="kd-rank-meta">{{ locale.integer(g.count) }} · {{ locale.rating(g.avgRating) }}</span>
+            </li>
+          </ol>
+
+          <h2 class="kd-title kd-title--gap">Страны производства</h2>
+          <ol class="kd-rank">
+            <li *ngFor="let c of summary.countries">
+              <span class="kd-rank-name">{{ c.name }}</span>
+              <span class="kd-rank-meta">{{ locale.integer(c.count) }}</span>
+            </li>
+          </ol>
+
+          <h2 class="kd-title kd-title--gap">Языки оригинала</h2>
+          <ol class="kd-rank">
+            <li *ngFor="let l of summary.languageTop">
+              <span class="kd-rank-name">{{ l.name }}</span>
+              <span class="kd-rank-meta">{{ locale.integer(l.count) }}</span>
+            </li>
+          </ol>
+        </div>
+      </ng-container>
+
+      <kd-empty-state
+        *ngIf="summary.completed === 0"
+        title="Данных пока нет"
+        text="Отметьте несколько просмотров — аналитика появится сама."
+      ></kd-empty-state>
+    </ng-container>
+  </div>
+</ion-content>

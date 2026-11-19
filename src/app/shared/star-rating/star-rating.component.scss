@@ -1,0 +1,41 @@
+.kd-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.kd-star {
+  /* Зона касания — весь блок, а не глиф: 28px в доноре не проходили WCAG 2.5.5. */
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--kd-text-muted);
+  font-size: 26px;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  &.is-filled {
+    color: var(--kd-star);
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.kd-star-value {
+  margin-left: 8px;
+  font-size: var(--kd-fs-body);
+  font-weight: 800;
+  color: var(--kd-star);
+  font-variant-numeric: tabular-nums;
+}

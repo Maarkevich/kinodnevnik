@@ -1,0 +1,150 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-title>
+      Дневник
+      <span class="kd-num kd-title-count">{{ stats.total }}</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="create()" aria-label="Записать просмотр">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <ng-container *ngIf="loading; else content">
+      <div class="kd-skeleton kd-skeleton-row" *ngFor="let i of [1, 2, 3, 4]"></div>
+    </ng-container>
+
+    <ng-template #content>
+      <!-- Сводка показывается только когда есть чем похвастаться -->
+      <section class="kd-strip" *ngIf="hasActivity" aria-label="Активность">
+        <span *ngIf="stats.today > 0">
+          Сегодня: <strong class="kd-num">{{ stats.today }}</strong>
+        </span>
+        <span *ngIf="stats.week > 0">
+          За неделю: <strong class="kd-num">{{ stats.week }}</strong>
+        </span>
+        <span *ngIf="stats.streak > 0">
+          Подряд: <strong class="kd-num">{{ locale.plural(stats.streak, { one: 'день', few: 'дня', many: 'дней' }) }}</strong>
+        </span>
+      </section>
+
+      <!-- Активные просмотры -->
+      <section class="kd-section" *ngIf="active.length > 0" aria-label="Смотрю сейчас">
+        <h2 class="kd-title">Смотрю сейчас</h2>
+        <div class="kd-active-row">
+          <article
+            *ngFor="let e of active; trackBy: trackById"
+            class="kd-active-card kd-hoverable"
+            (click)="open(e)"
+          >
+            <div class="kd-active-poster kd-poster-interactive">
+              <img *ngIf="e.poster_path && !broken[e.entryId]" [src]="poster.url(e.poster_path, 'poster')" [alt]="e.title" loading="lazy" (error)="broken[e.entryId] = true" />
+              <div *ngIf="!e.poster_path || broken[e.entryId]" class="kd-poster-fallback">{{ poster.initial(e.title) }}</div>
+            </div>
+            <div class="kd-active-body">
+              <div class="kd-active-title">{{ e.title }}</div>
+              <div class="kd-active-status">
+                {{ e.status === 'rewatching' ? 'Пересматриваю' : e.status === 'dropped' ? 'Брошено' : 'Смотрю' }}
+              </div>
+              <ion-button
+                size="small"
+                fill="outline"
+                (click)="complete(e, $event)"
+                *ngIf="e.status !== 'dropped'"
+              >
+                Завершить
+              </ion-button>
+              <ion-button size="small" fill="clear" (click)="remove(e, $event)">Удалить</ion-button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Пусто -->
+      <kd-empty-state
+        *ngIf="stats.total === 0 && active.length === 0"
+        title="Здесь появятся твои записи"
+        text="Нажми плюс внизу и отметь первый фильм — оценка, дата и пара слов."
+        actionLabel="Отметить первый фильм"
+        (action)="create()"
+      ></kd-empty-state>
+
+      <ng-container *ngIf="stats.total > 0">
+        <div class="kd-controls">
+          <div class="kd-chips" role="group" aria-label="Фильтр">
+            <button
+              *ngFor="let f of filters"
+              type="button"
+              class="kd-chip"
+              [class.is-active]="filter === f.id"
+              (click)="setFilter(f.id)"
+            >
+              {{ f.label }}
+            </button>
+          </div>
+
+          <select
+            class="kd-select kd-select--compact"
+            [value]="sort"
+            (change)="setSort($any($event.target).value)"
+            aria-label="Сортировка"
+          >
+            <option *ngFor="let s of sorts" [value]="s.id">{{ s.label }}</option>
+          </select>
+        </div>
+
+        <kd-empty-state
+          *ngIf="rows.length === 0"
+          title="По этому фильтру записей нет"
+          actionLabel="Показать все"
+          (action)="setFilter('all')"
+        ></kd-empty-state>
+
+        <div class="kd-groups">
+          <section *ngFor="let g of groups; trackBy: trackByMonth" class="kd-month">
+            <h2 class="kd-month-title">{{ g.label }}</h2>
+
+            <div *ngFor="let day of g.days; trackBy: trackByDay" class="kd-day">
+              <div class="kd-day-label">{{ day.label }}</div>
+
+              <article
+                *ngFor="let e of day.items; trackBy: trackById"
+                class="kd-row kd-hoverable"
+                [class.is-faded]="fadeWatched && e.status === null"
+                (click)="open(e)"
+              >
+                <div class="kd-row-poster kd-poster-interactive">
+                  <img *ngIf="e.poster_path && !broken[e.entryId]" [src]="poster.url(e.poster_path, 'poster')" [alt]="e.title" loading="lazy" (error)="broken[e.entryId] = true" />
+                  <div *ngIf="!e.poster_path || broken[e.entryId]" class="kd-poster-fallback">{{ poster.initial(e.title) }}</div>
+                </div>
+
+                <div class="kd-row-body">
+                  <div class="kd-row-title">{{ e.title }}</div>
+                  <div class="kd-row-original" *ngIf="title(e).secondary">{{ title(e).secondary }}</div>
+
+                  <div class="kd-row-meta">
+                    <span class="kd-row-rating" *ngIf="e.rating">{{ locale.rating(e.rating) }}</span>
+                    <span class="kd-badge" *ngIf="e.rewatch">пересмотр</span>
+                    <span class="kd-badge kd-badge--warn" *ngIf="e.status === 'dropped'">брошено</span>
+                    <span class="kd-badge" *ngIf="e.media_type === 'tv'">сериал</span>
+                    <span class="kd-badge" *ngIf="e.tags && e.tags.length">{{ e.tags.length }}</span>
+                  </div>
+                </div>
+
+                <div class="kd-row-actions">
+                  <ion-button fill="clear" size="small" (click)="remove(e, $event)" aria-label="Удалить запись">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</ion-content>

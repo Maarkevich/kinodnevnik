@@ -1,0 +1,49 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-title>Подборки</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <div class="kd-chips" role="group" aria-label="Категории">
+      <button type="button" class="kd-chip" [class.is-active]="selected === null" (click)="select(null)">
+        В тренде
+      </button>
+      <button
+        *ngFor="let c of collections"
+        type="button"
+        class="kd-chip"
+        [class.is-active]="selected === c.id"
+        (click)="select(c.id)"
+      >
+        {{ c.title }}
+      </button>
+    </div>
+
+    <!--
+      Нет ключа TMDb — это не ошибка сети, а отсутствие настройки.
+      Показываем понятное состояние со ссылкой, а не пустую сетку.
+    -->
+    <div class="kd-key-hint" *ngIf="error === 'Ключ TMDb не задан'">
+      <strong>Нужен ключ TMDb</strong>
+      <p>Без него приложение не найдёт новые тайтлы. Дневник, списки и аналитика работают и так.</p>
+      <ion-button size="small" routerLink="/settings">Добавить ключ</ion-button>
+    </div>
+
+    <div class="kd-grid" *ngIf="items.length > 0">
+      <kd-media-card *ngFor="let item of items; trackBy: trackById" [snapshot]="item"></kd-media-card>
+    </div>
+
+    <div class="kd-skeleton-grid" *ngIf="loading && items.length === 0">
+      <div class="kd-skeleton" *ngFor="let i of [1,2,3,4,5,6,7,8,9]"></div>
+    </div>
+
+    <div class="kd-load-row">
+      <ion-button *ngIf="!exhausted && items.length > 0" fill="outline" [disabled]="loading" (click)="more()">
+        {{ loading ? 'Загружаю…' : 'Показать ещё' }}
+      </ion-button>
+      <p class="kd-cache-note" *ngIf="fromCache">Данные из кэша — показываем сохранённое, сети нет.</p>
+    </div>
+  </div>
+</ion-content>

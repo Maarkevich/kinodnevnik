@@ -1,9 +1,22 @@
+# Зависимости и артефакты сборки
 node_modules/
 dist/
-www/
 .angular/
+out-tsc/
 coverage/
-*.log
-.DS_Store
+.tmp/
+test-results/
+playwright-report/
+
+# Генерируется на prebuild — не коммитить, иначе buildId станет ложью
+src/environments/version.ts
+public/version.json
+
+# Секреты
 .env
-.env.local
+.env.*
+
+# ОС и редакторы
+.DS_Store
+Thumbs.db
+*.log

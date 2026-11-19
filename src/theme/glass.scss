@@ -1,0 +1,133 @@
+/**
+ * «Жидкое стекло» (спецификация, 5.5).
+ *
+ * Честная оговорка: преломление, как в iOS 26, в вебе портируемо НЕ
+ * воспроизводится — `backdrop-filter: url(#distortion)` в WebKit не работает.
+ * Здесь материал, а не линза: blur + saturate + внутренняя световая кромка
+ * + блик по краю.
+ *
+ * Стекло применяется ТОЛЬКО к оверлеям (листы, модалки, поповеры, алерты,
+ * тулбар/таббар). Сетка постеров со blur = 18 слоёв = джарки на среднем
+ * Android и на iPhone.
+ */
+
+/// Альфа ниже 0.72 недопустима: под светлым постером текст падает до 2.56:1.
+@function kd-safe-alpha($alpha) {
+  @if ($alpha < 0.72) {
+    @return 0.72;
+  }
+  @return $alpha;
+}
+
+@mixin kd-glass($blur: 20px, $alpha: 0.72) {
+  $a: kd-safe-alpha($alpha);
+
+  background: rgba(33, 37, 41, $a);
+  -webkit-backdrop-filter: blur($blur) saturate(160%);
+  backdrop-filter: blur($blur) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 12px 32px -12px rgba(0, 0, 0, 0.6);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background: var(--kd-bg-elevated);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--kd-border);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--kd-bg-elevated);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--kd-border);
+    box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Общий класс для своих оверлеев. */
+.kd-glass {
+  @include kd-glass;
+  border-radius: var(--kd-r-lg);
+}
+
+/*
+ * Скрим под стекло, когда за ним может быть картинка.
+ * Обязателен на hero-обложках и в листах поверх постеров.
+ */
+.kd-media-scrim {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.68));
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ── Оверлеи Ionic ─────────────────────────────────────────────── */
+
+ion-modal.kd-modal-glass {
+  &::part(content) {
+    @include kd-glass;
+    border-radius: var(--kd-r-xl);
+  }
+
+  &::part(backdrop) {
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Лист быстрой записи выезжает снизу — скругляем только верх. */
+ion-modal.kd-sheet-glass {
+  &::part(content) {
+    @include kd-glass;
+    border-radius: var(--kd-r-xl) var(--kd-r-xl) 0 0;
+  }
+}
+
+ion-popover.kd-popover-glass {
+  &::part(content) {
+    @include kd-glass(16px, 0.78);
+    border-radius: var(--kd-r-lg);
+  }
+
+  &::part(backdrop) {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+ion-alert.kd-alert-glass {
+  .alert-wrapper {
+    @include kd-glass(16px, 0.78);
+    border-radius: var(--kd-r-lg);
+  }
+}
+
+ion-toast.kd-toast-glass {
+  &::part(content) {
+    @include kd-glass(16px, 0.8);
+    border-radius: var(--kd-r-full);
+  }
+}
+
+/* Тулбар и таббар: стекло только когда под ними реально есть контент. */
+.kd-glass-toolbar {
+  @include kd-glass(14px, 0.82);
+  border-bottom: 1px solid var(--kd-border);
+}
+
+.kd-glass-tabbar {
+  @include kd-glass(14px, 0.82);
+  border-top: 1px solid var(--kd-border);
+}

@@ -1,0 +1,45 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-back-button slot="start" defaultHref="/diary" text="Назад"></ion-back-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <p class="kd-hint" *ngIf="loading">Загружаем…</p>
+
+    <div class="kd-key-hint" *ngIf="failed">
+      <strong>Информация не загрузилась</strong>
+    </div>
+
+    <ng-container *ngIf="person">
+      <div class="kd-person-head">
+        <div class="kd-person-photo">
+          <img *ngIf="person.photo; else noPhoto" [src]="person.photo" [alt]="person.name" />
+          <ng-template #noPhoto><div class="kd-poster-fallback">{{ person.name.charAt(0) }}</div></ng-template>
+        </div>
+        <div>
+          <h1 class="kd-hero">{{ person.name }}</h1>
+          <p class="kd-person-meta" *ngIf="lifespan">{{ lifespan }}</p>
+          <p class="kd-person-meta" *ngIf="person.place">{{ person.place }}</p>
+        </div>
+      </div>
+
+      <p class="kd-bio" *ngIf="person.bio">{{ person.bio }}</p>
+
+      <h2 class="kd-title">Фильмография</h2>
+      <ul class="kd-credits">
+        <li *ngFor="let c of credits; trackBy: trackById" class="kd-credit">
+          <a [routerLink]="['/', c.kind, c.id]">
+            <img *ngIf="c.poster" [src]="c.poster" [alt]="" loading="lazy" />
+            <div class="kd-credit-body">
+              <span class="kd-credit-title">{{ c.title }}</span>
+              <span class="kd-credit-role">{{ c.job }}<em *ngIf="c.character"> — {{ c.character }}</em></span>
+              <span class="kd-credit-year" *ngIf="c.year">{{ c.year }}</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+  </div>
+</ion-content>

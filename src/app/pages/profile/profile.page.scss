@@ -1,0 +1,290 @@
+.kd-profile-head {
+  margin-bottom: 18px;
+}
+
+.kd-bio {
+  margin: 6px 0 10px;
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-secondary);
+}
+
+/* ── Pill-табы ─────────────────────────────────────────────────── */
+
+.kd-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kd-tab-pill {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--kd-r-full);
+  border: 1px solid var(--kd-border);
+  background: var(--kd-bg-elevated);
+  color: var(--kd-text-secondary);
+  font-family: var(--kd-font-sans);
+  font-size: var(--kd-fs-small);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &.is-active {
+    background: var(--kd-accent);
+    border-color: var(--kd-accent);
+    color: var(--kd-on-accent);
+  }
+}
+
+.kd-year-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* ── Плитки метрик ─────────────────────────────────────────────── */
+
+.kd-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+kd-metric-card {
+  display: block;
+  padding: 14px;
+  border-radius: var(--kd-r-lg);
+  background: var(--kd-bg-elevated);
+  border: 1px solid var(--kd-border);
+}
+
+::ng-deep .kd-metric-label {
+  font-size: var(--kd-fs-micro);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kd-text-muted);
+}
+
+::ng-deep .kd-metric-value {
+  margin-top: 6px;
+  font-size: var(--kd-fs-num);
+  font-weight: 800;
+  line-height: var(--kd-lh-num);
+  color: var(--kd-accent);
+  font-variant-numeric: tabular-nums;
+
+  &.is-empty {
+    font-size: var(--kd-fs-small);
+    color: var(--kd-text-muted);
+    font-weight: 600;
+  }
+}
+
+::ng-deep .kd-metric-tilde {
+  color: var(--kd-text-muted);
+  margin-right: 2px;
+}
+
+::ng-deep .kd-metric-coverage,
+::ng-deep .kd-metric-note {
+  margin-top: 6px;
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+}
+
+.kd-undated {
+  grid-column: 1 / -1;
+  padding: 10px 12px;
+  border-radius: var(--kd-r-md);
+  background: var(--kd-bg-sunken);
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-secondary);
+}
+
+/* ── Гистограмма ───────────────────────────────────────────────── */
+
+.kd-section {
+  margin-bottom: 24px;
+}
+
+.kd-title--gap {
+  margin-top: 28px;
+}
+
+.kd-histogram {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 160px;
+  padding-top: 8px;
+}
+
+.kd-hbar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.kd-hbar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.kd-hbar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--kd-accent);
+}
+
+.kd-hbar-label {
+  margin-top: 6px;
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.kd-hbar-count {
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.kd-coverage {
+  margin: 10px 0 0;
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+}
+
+/* ── Темп по месяцам ───────────────────────────────────────────── */
+
+.kd-pace {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+}
+
+.kd-pace-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kd-pace-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.kd-pace-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--kd-chart-drama);
+}
+
+.kd-pace-label {
+  margin-top: 6px;
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+}
+
+/* ── Тепловая карта ────────────────────────────────────────────── */
+
+.kd-heatmap {
+  display: grid;
+  grid-template-columns: repeat(53, 1fr);
+  grid-auto-flow: column;
+  gap: 2px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.kd-heat-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 7px;
+  border-radius: 2px;
+  background: var(--kd-bg-sunken);
+
+  &[data-level='1'] { background: rgba(73, 239, 251, 0.28); }
+  &[data-level='2'] { background: rgba(73, 239, 251, 0.5); }
+  &[data-level='3'] { background: rgba(73, 239, 251, 0.72); }
+  &[data-level='4'] { background: var(--kd-accent); }
+}
+
+.kd-heat-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+
+  i {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--kd-bg-sunken);
+
+    &[data-level='1'] { background: rgba(73, 239, 251, 0.28); }
+    &[data-level='2'] { background: rgba(73, 239, 251, 0.5); }
+    &[data-level='3'] { background: rgba(73, 239, 251, 0.72); }
+    &[data-level='4'] { background: var(--kd-accent); }
+  }
+}
+
+/* ── Рейтинговые списки ────────────────────────────────────────── */
+
+.kd-rank {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--kd-r-md);
+    background: var(--kd-bg-elevated);
+    border: 1px solid var(--kd-border);
+    margin-bottom: 6px;
+  }
+}
+
+.kd-rank-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--kd-fs-body);
+  font-weight: 700;
+}
+
+.kd-rank-meta {
+  flex: 0 0 auto;
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  .kd-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

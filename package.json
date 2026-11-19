@@ -1,0 +1,50 @@
+{
+  "name": "kinodnevnik",
+  "version": "0.1.0",
+  "description": "Личный дневник фильмов и сериалов",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --port 8100",
+    "prebuild": "node scripts/prebuild.mjs",
+    "build": "ng build --configuration production --base-href /kinodnevnik/ && npm run sw",
+    "sw": "node scripts/build-sw.mjs",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test --watch=false",
+    "e2e": "playwright test",
+    "lint": "ng lint",
+    "verify": "node scripts/verify-build.mjs",
+    "check:sync": "esbuild scripts/sync-check.ts --bundle --platform=node --format=esm --outfile=.tmp/sync-check.mjs --log-level=error && node .tmp/sync-check.mjs"
+  },
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/platform-browser-dynamic": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@ionic/angular": "^8.8.0",
+    "fflate": "^0.8.2",
+    "ionicons": "^8.0.13",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.8.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.0",
+    "@angular/cli": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/compiler-cli": "^21.2.0",
+    "@playwright/test": "^1.49.0",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^22.0.0",
+    "jasmine-core": "~5.4.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.9.0"
+  }
+}

@@ -1,0 +1,264 @@
+:host {
+  display: block;
+}
+
+.kd-title-count {
+  margin-left: 8px;
+  font-size: var(--kd-fs-card);
+}
+
+.kd-skeleton-row {
+  height: 92px;
+  margin-bottom: 10px;
+}
+
+/* ── Сводка активности ─────────────────────────────────────────── */
+
+.kd-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  border-radius: var(--kd-r-md);
+  background: var(--kd-bg-elevated);
+  border: 1px solid var(--kd-border);
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-secondary);
+}
+
+/* ── Активные просмотры ────────────────────────────────────────── */
+
+.kd-section {
+  margin-bottom: var(--kd-gap-section);
+}
+
+.kd-active-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kd-active-card {
+  flex: 0 0 150px;
+  scroll-snap-align: start;
+  padding: 8px;
+  border-radius: var(--kd-r-lg);
+  background: var(--kd-bg-elevated);
+  border: 1px solid var(--kd-border);
+  cursor: pointer;
+}
+
+.kd-active-poster {
+  aspect-ratio: 2 / 3;
+  border-radius: var(--kd-r-md);
+  overflow: hidden;
+  background: var(--kd-bg-sunken);
+  margin-bottom: 8px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.kd-active-title {
+  font-size: var(--kd-fs-small);
+  font-weight: 700;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+
+.kd-active-status {
+  margin: 4px 0 8px;
+  font-size: var(--kd-fs-micro);
+  font-weight: 700;
+  color: var(--kd-accent);
+}
+
+.kd-active-body ion-button {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  margin: 2px 4px 2px 0;
+  font-size: var(--kd-fs-micro);
+}
+
+/* ── Фильтры ───────────────────────────────────────────────────── */
+
+.kd-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.kd-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.kd-chip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--kd-r-full);
+  border: 1px solid var(--kd-border);
+  background: var(--kd-bg-elevated);
+  color: var(--kd-text-secondary);
+  font-family: var(--kd-font-sans);
+  font-size: var(--kd-fs-small);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &.is-active {
+    background: var(--kd-accent-dim);
+    border-color: var(--kd-accent);
+    color: var(--kd-accent);
+  }
+}
+
+.kd-select--compact {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 150px;
+}
+
+/* ── Лента ─────────────────────────────────────────────────────── */
+
+.kd-month {
+  margin-bottom: var(--kd-gap-section);
+}
+
+.kd-month-title {
+  margin: 0 0 10px;
+  font-size: var(--kd-fs-title);
+  font-weight: 800;
+  color: var(--kd-text);
+}
+
+.kd-day {
+  margin-bottom: 14px;
+}
+
+/*
+ * Без text-transform: uppercase. Подпись — «5 нояб.», а капс превращает
+ * её в «5 НОЯБ»: точка теряется, сокращение выглядит обрезанным.
+ */
+.kd-day-label {
+  margin-bottom: 6px;
+  padding-left: 2px;
+  font-size: var(--kd-fs-small);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--kd-text-muted);
+}
+
+.kd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: var(--kd-r-md);
+  background: var(--kd-bg-elevated);
+  border: 1px solid var(--kd-border);
+  cursor: pointer;
+
+  /* Просмотренное гаснет — так активное читается сразу (настройка из донора). */
+  &.is-faded {
+    opacity: 0.62;
+  }
+}
+
+.kd-row-poster {
+  flex: 0 0 48px;
+  width: 48px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--kd-r-sm);
+  overflow: hidden;
+  background: var(--kd-bg-sunken);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.kd-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.kd-row-title {
+  font-size: var(--kd-fs-card);
+  font-weight: 700;
+  line-height: var(--kd-lh-card);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kd-row-original {
+  margin-top: 1px;
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kd-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+}
+
+.kd-row-rating {
+  font-size: var(--kd-fs-small);
+  font-weight: 800;
+  color: var(--kd-star);
+  font-variant-numeric: tabular-nums;
+}
+
+.kd-badge {
+  padding: 2px 7px;
+  border-radius: var(--kd-r-sm);
+  background: var(--kd-bg-sunken);
+  color: var(--kd-text-secondary);
+  font-size: var(--kd-fs-micro);
+  font-weight: 700;
+
+  &--warn {
+    color: var(--kd-warning);
+  }
+}
+
+.kd-row-actions {
+  flex: 0 0 auto;
+  opacity: 0.55;
+}
+
+.kd-row:hover .kd-row-actions {
+  opacity: 1;
+}

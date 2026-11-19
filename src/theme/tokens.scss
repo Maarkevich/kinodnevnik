@@ -1,0 +1,127 @@
+/*
+ * Базовые стили Ionic подключаются ЗДЕСЬ, до наших токенов.
+ *
+ * Порядок принципиален: Ionic задаёт --ion-color-primary в core.css, и если
+ * наши :root-переменные окажутся в файле, загруженном раньше, его значение
+ * победит — кнопки станут синими #3880ff вместо акцентных #49effb. Это
+ * ровно тот баг, который так выглядит «перевод приехал, а тема нет».
+ */
+@import "../../node_modules/@ionic/angular/css/core.css";
+@import "../../node_modules/@ionic/angular/css/normalize.css";
+@import "../../node_modules/@ionic/angular/css/structure.css";
+@import "../../node_modules/@ionic/angular/css/typography.css";
+@import "../../node_modules/@ionic/angular/css/display.css";
+@import "../../node_modules/@ionic/angular/css/padding.css";
+@import "../../node_modules/@ionic/angular/css/float-elements.css";
+@import "../../node_modules/@ionic/angular/css/text-alignment.css";
+@import "../../node_modules/@ionic/angular/css/text-transformation.css";
+@import "../../node_modules/@ionic/angular/css/flex-utils.css";
+
+/**
+ * Дизайн-токены «Кинодневника» (спецификация, раздел 5).
+ * Значения фиксированы; контраст посчитан по WCAG 2.1 и приведён в комментариях.
+ */
+
+:root {
+  /* ── Поверхности ─────────────────────────────────────────────── */
+  --kd-bg: #16191c;               /* В4: выбран более глубокий фон      */
+  --kd-bg-elevated: #212529;      /* панели и карточки                  */
+  --kd-bg-sunken: #101315;        /* поля ввода, подложки скроллов      */
+  --kd-border: rgba(255, 255, 255, 0.08);
+  --kd-glass-tint: rgba(33, 37, 41, 0.72);
+
+  /* ── Текст ───────────────────────────────────────────────────── */
+  --kd-text: #e9ecef;             /* 11.6:1 на --kd-bg   AA             */
+  --kd-text-secondary: #adb5bd;   /* 7.9:1               AA             */
+  --kd-text-muted: #868e96;       /* 4.64:1 на elevated  AA (минимум)  */
+  --kd-text-disabled: #495057;    /* только иконки, не текст            */
+
+  /* ── Акцент (интерактив) ─────────────────────────────────────── */
+  --kd-accent: #49effb;           /* 11.04:1 на elevated AA             */
+  --kd-accent-strong: #22d3ee;
+  --kd-accent-dim: rgba(73, 239, 251, 0.14);
+  /* Текст НА акценте обязан быть тёмным: белый даёт 1.40:1 (провал).  */
+  --kd-on-accent: #0b1418;
+
+  /* ── Семантика. Не смешивать с акцентом ──────────────────────── */
+  /* success — настоящий зелёный. Мятный #63e6be отличается от акцента
+     всего на 22° при равной светлоте и на мелком тексте сливается с ним. */
+  --kd-success: #69db7c;
+  --kd-warning: #ffa94d;          /* 8.11:1                              */
+  --kd-danger: #ff6b6b;           /* 5.56:1 (донорский #d90429 = 2.94:1) */
+  --kd-star: #fbbf24;             /* 9.24:1                              */
+
+  /* ── Палитра рядов графиков ──────────────────────────────────── */
+  /* Из неё ИСКЛЮЧЕНЫ циан (ряды не должны спорить с акцентом) и
+     #69db7c (это семантический success). */
+  --kd-chart-drama: #74c0fc;
+  --kd-chart-action: #ff922b;
+  --kd-chart-comedy: #ffd43b;
+  --kd-chart-scifi: #b197fc;
+  --kd-chart-thriller: #f783ac;
+  --kd-chart-animation: #94d82d;
+  --kd-chart-horror: #845ef7;
+  --kd-chart-doc: #e599f7;
+
+  /* ── Типографика: Nunito, self-hosted ────────────────────────── */
+  --kd-font-sans: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --kd-fs-hero: 28px;  --kd-lh-hero: 1.15;   /* 800 */
+  --kd-fs-title: 22px; --kd-lh-title: 1.2;   /* 800 */
+  --kd-fs-card: 17px;  --kd-lh-card: 1.25;   /* 700 */
+  --kd-fs-body: 15px;  --kd-lh-body: 1.45;   /* 400 */
+  --kd-fs-small: 13px; --kd-lh-small: 1.35;  /* 600 */
+  --kd-fs-micro: 11px; --kd-lh-micro: 1.2;   /* 700, uppercase */
+  --kd-fs-num: 20px;   --kd-lh-num: 1;       /* 800, tabular   */
+
+  /* ── Радиусы ─────────────────────────────────────────────────── */
+  --kd-r-sm: 8px;
+  --kd-r-md: 14px;
+  --kd-r-lg: 20px;
+  --kd-r-xl: 28px;
+  --kd-r-full: 999px;
+
+  /* ── Каркас ──────────────────────────────────────────────────── */
+  --kd-toolbar-h: 56px;
+  --kd-tabbar-h: 56px;
+  --kd-gap: 16px;
+  --kd-gap-section: 24px;
+  --kd-lvh: 100dvh;
+
+  /* ── Привязка к Ionic ────────────────────────────────────────── */
+  --ion-background-color: var(--kd-bg);
+  --ion-background-color-rgb: 22, 25, 28;
+  --ion-text-color: var(--kd-text);
+  --ion-text-color-rgb: 233, 236, 239;
+  --ion-item-background: var(--kd-bg-elevated);
+  --ion-card-background: var(--kd-bg-elevated);
+  --ion-toolbar-background: var(--kd-bg-elevated);
+  --ion-tab-bar-background: var(--kd-bg-elevated);
+  --ion-font-family: var(--kd-font-sans);
+
+  --ion-color-primary: var(--kd-accent);
+  --ion-color-primary-rgb: 73, 239, 251;
+  --ion-color-primary-contrast: var(--kd-on-accent);
+  --ion-color-primary-contrast-rgb: 11, 20, 24;
+  --ion-color-primary-shade: #22d3ee;
+  --ion-color-primary-tint: #6bf3fc;
+
+  --ion-color-success: var(--kd-success);
+  --ion-color-warning: var(--kd-warning);
+  --ion-color-danger: var(--kd-danger);
+}
+
+/* Приложение всегда тёмное: светлой темы в v1 нет (спецификация, 5.2),
+   поэтому prefers-color-scheme намеренно не обрабатывается. */
+
+/* Числа в статистике: акцент + табличные цифры, иначе колонки «плывут». */
+.kd-num {
+  color: var(--kd-accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+/* Акцентное слово в заголовке — одно, не больше (спецификация, 5.3). */
+.kd-heading-accent {
+  color: var(--kd-accent);
+}

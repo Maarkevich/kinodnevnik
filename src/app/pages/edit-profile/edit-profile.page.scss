@@ -1,0 +1,27 @@
+.kd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-secondary);
+}
+
+.kd-textarea {
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: var(--kd-lh-body);
+}
+
+.kd-hint {
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+  line-height: 1.4;
+}
+
+.kd-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}

@@ -1,0 +1,26 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-back-button slot="start" defaultHref="/profile" text="Назад"></ion-back-button>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container">
+    <p class="kd-hint" *ngIf="loading">Загружаем…</p>
+
+    <kd-empty-state
+      *ngIf="!loading && items.length === 0"
+      title="В списке пусто"
+      text="Добавляйте тайтлы из карточек фильмов и сериалов."
+    ></kd-empty-state>
+
+    <div class="kd-grid" *ngIf="items.length">
+      <div *ngFor="let i of items" class="kd-list-item">
+        <kd-media-card *ngIf="i.snapshot" [snapshot]="i.snapshot"></kd-media-card>
+        <div *ngIf="!i.snapshot" class="kd-unknown">Нет данных об этом тайтле</div>
+        <ion-button size="small" fill="clear" (click)="remove(i)" *ngIf="i.snapshot">Убрать</ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

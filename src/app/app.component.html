@@ -1,0 +1,86 @@
+<ion-app (keydown)="onKey($event)">
+  <!-- Офлайн: не модалка, а тонкая плашка, данные-то на месте -->
+  <div class="kd-net-banner" *ngIf="!online" role="status" aria-live="polite">
+    Нет сети — дневник, списки и аналитика работают по сохранённым данным.
+  </div>
+
+  <!-- Обновление: только по явной кнопке, молча перезагружать нельзя -->
+  <div class="kd-update-banner kd-glass" *ngIf="updateAvailable" role="status" aria-live="polite">
+    <span>Доступна новая версия</span>
+    <ion-button size="small" fill="solid" (click)="applyUpdate()">Обновить</ion-button>
+    <ion-button size="small" fill="clear" (click)="updates.dismiss()">Позже</ion-button>
+  </div>
+
+  <ion-router-outlet></ion-router-outlet>
+
+  <nav class="kd-tabbar kd-glass-tabbar" *ngIf="showTabs" role="tablist" aria-label="Основная навигация">
+    <button
+      type="button"
+      role="tab"
+      class="kd-tab"
+      [class.is-active]="activeTab === 'diary'"
+      [attr.aria-selected]="activeTab === 'diary'"
+      (click)="go('diary')"
+    >
+      <ion-icon name="book-outline" aria-hidden="true"></ion-icon>
+      <span>Дневник</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      class="kd-tab"
+      [class.is-active]="activeTab === 'collections'"
+      [attr.aria-selected]="activeTab === 'collections'"
+      (click)="go('collections')"
+    >
+      <ion-icon name="layers-outline" aria-hidden="true"></ion-icon>
+      <span>Подборки</span>
+    </button>
+
+    <button type="button" class="kd-tab kd-tab-create" (click)="quickLog()" aria-label="Записать просмотр">
+      <ion-icon name="add" aria-hidden="true"></ion-icon>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      class="kd-tab"
+      [class.is-active]="activeTab === 'search'"
+      [attr.aria-selected]="activeTab === 'search'"
+      (click)="go('search')"
+    >
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <span>Поиск</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      class="kd-tab"
+      [class.is-active]="activeTab === 'profile'"
+      [attr.aria-selected]="activeTab === 'profile'"
+      (click)="go('profile')"
+    >
+      <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+      <span>Профиль</span>
+    </button>
+  </nav>
+
+  <!--
+    Установка. На iOS штатного промпта нет, и это не косметика: в обычной
+    вкладке Safari хранилище живёт неделю (спецификация, 12.1).
+  -->
+  <div class="kd-install-hint kd-glass" *ngIf="install && !install.standalone && !installer.dismissed">
+    <div class="kd-install-text">
+      <strong>Добавьте «Кинодневник» на домашний экран</strong>
+      <span>Так приложение работает офлайн, а данные не удаляются системой.</span>
+    </div>
+    <div class="kd-install-actions">
+      <ion-button size="small" fill="solid" (click)="installApp()">
+        {{ install.promptable ? 'Установить' : 'Как установить' }}
+      </ion-button>
+      <ion-button size="small" fill="clear" (click)="installer.dismiss()">Не сейчас</ion-button>
+    </div>
+  </div>
+</ion-app>

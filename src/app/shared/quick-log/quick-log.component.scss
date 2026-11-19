@@ -1,0 +1,95 @@
+.kd-ql-body {
+  padding: 8px 16px 32px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.kd-ql-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.kd-ql-poster {
+  flex: 0 0 84px;
+  width: 84px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--kd-r-md);
+  overflow: hidden;
+  background: var(--kd-bg-sunken);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.kd-ql-names {
+  min-width: 0;
+  flex: 1;
+}
+
+.kd-ql-title {
+  font-size: var(--kd-fs-card);
+  font-weight: 700;
+  line-height: var(--kd-lh-card);
+}
+
+.kd-ql-original,
+.kd-ql-year {
+  margin-top: 2px;
+  font-size: var(--kd-fs-small);
+  color: var(--kd-text-muted);
+}
+
+.kd-ql-block {
+  margin-bottom: 20px;
+}
+
+.kd-ql-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+ion-datetime {
+  border-radius: var(--kd-r-md);
+  background: var(--kd-bg-sunken);
+  border: 1px solid var(--kd-border);
+  min-height: 44px;
+}
+
+.kd-ql-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+ion-radio {
+  min-height: 44px;
+  font-size: var(--kd-fs-body);
+}
+
+.kd-ql-textarea {
+  padding: 10px 12px;
+  min-height: 96px;
+  resize: vertical;
+  line-height: var(--kd-lh-body);
+}
+
+.kd-ql-counter {
+  margin-top: 4px;
+  text-align: right;
+  font-size: var(--kd-fs-micro);
+  color: var(--kd-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+ion-footer ion-toolbar {
+  --background: var(--kd-bg-elevated);
+  border-top: 1px solid var(--kd-border);
+  padding-bottom: env(safe-area-inset-bottom);
+}

@@ -1,0 +1,34 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="kd-glass-toolbar">
+    <ion-back-button slot="start" defaultHref="/profile" text="Назад"></ion-back-button>
+    <ion-title>Профиль</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="kd-container kd-container--narrow">
+    <section class="kd-card">
+      <label class="kd-field">
+        <span>Имя</span>
+        <input class="kd-input" [value]="name" (input)="name = $any($event.target).value" placeholder="Как вас показывать" maxlength="40" />
+      </label>
+
+      <label class="kd-field">
+        <span>О себе</span>
+        <textarea class="kd-input kd-textarea" rows="4" maxlength="300"
+                  [value]="bio" (input)="bio = $any($event.target).value"
+                  placeholder="Пара слов о том, что вы смотрите"></textarea>
+      </label>
+
+      <p class="kd-hint">
+        Имя и описание хранятся только на устройстве. Почта, адрес, сайт и
+        упоминания других людей не читаются и не сохраняются.
+      </p>
+
+      <div class="kd-actions">
+        <ion-button fill="clear" (click)="cancel()">Отмена</ion-button>
+        <ion-button (click)="save()">Сохранить</ion-button>
+      </div>
+    </section>
+  </div>
+</ion-content>
