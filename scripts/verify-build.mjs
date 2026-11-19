@@ -32,6 +32,15 @@ const missing = manifest.files.filter(
 if (missing.length) fail.push(`в прекеше ${missing.length} несуществующих файлов: ${missing.slice(0, 5)}`);
 else note(`файлы прекеша на месте: ${manifest.files.length}`);
 
+// 2b. sw.js обязан быть классическим скриптом: register() без {type:'module'},
+// потому что module-воркеры не поддерживаются Firefox. ESM-синтаксис здесь —
+// это «приложение работает, но офлайна нет», и видно это только на устройстве.
+if (/\n\s*(?:export|import)[\s{]/.test(sw)) {
+  fail.push('в sw.js есть ESM-синтаксис — ServiceWorker не исполнится как classic script');
+} else {
+  note('sw.js — корректный classic script');
+}
+
 // 3. index.html должен быть в прекеше — иначе офлайн-старт нечем отдать
 if (!manifest.files.some((f) => f.endsWith('index.html'))) {
   fail.push('index.html отсутствует в прекеше: холодный офлайн-старт невозможен');

@@ -105,7 +105,25 @@ const banner =
   `const KD_BUILD_ID = ${JSON.stringify(version.buildId)};\n` +
   `const KD_PRECACHE_FILES = ${JSON.stringify(manifest.files)};\n`;
 
-writeFileSync(resolve(target, 'sw.js'), banner + compiled.outputText, 'utf8');
+/*
+ * Service Worker грузится как КЛАССИЧЕСКИЙ скрипт: register() вызывается без
+ * { type: 'module' }, потому что module-воркеры не поддерживаются Firefox.
+ * Значит любой ESM-синтаксис в тексте воркера fatal.
+ *
+ * Транспилятор дописывает `export {};` (в исходнике он нужен, чтобы TS считал
+ * файл модулем и не путал `self` с DOM-типом). В классическом скрипте это
+ * SyntaxError, и браузер отвечает «ServiceWorker script evaluation failed» —
+ * при этом приложение выглядит полностью рабочим, просто без офлайна.
+ */
+let swCode = compiled.outputText.replace(/^\s*export\s*\{\s*\}\s*;?\s*$/gm, '');
+
+const esmLeft = /(^|\n)\s*(?:export|import)[\s{]/.test(swCode);
+if (esmLeft) {
+  console.error('[build-sw] в sw.js остался ESM-синтаксис — как classic script он не исполнится');
+  process.exit(1);
+}
+
+writeFileSync(resolve(target, 'sw.js'), banner + swCode, 'utf8');
 
 // GitHub Pages не делает rewrite для SPA: 404.html = копия index.html.
 const index = resolve(target, 'index.html');
