@@ -117,7 +117,8 @@
               "src/theme/glass.scss",
               "src/global.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "karmaConfig": "karma.conf.js"
           }
         }
       }

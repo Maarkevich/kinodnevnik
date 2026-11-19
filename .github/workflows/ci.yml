@@ -32,7 +32,11 @@ jobs:
           npx tsc --noEmit --target ES2022 --module ES2022
           --lib ES2022,WebWorker --strict --moduleResolution bundler src/sw.ts
 
+      - name: Merge rules (17 checks, no browser needed)
+        run: npm run check:sync
+
       - name: Unit tests
+        # Karma требует Chrome; на раннерах GitHub он есть (setup-chrome ниже).
         run: npm test
 
       - name: Production build
