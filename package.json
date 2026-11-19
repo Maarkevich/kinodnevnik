@@ -15,7 +15,7 @@
     "e2e": "playwright test",
     "lint": "ng lint",
     "verify": "node scripts/verify-build.mjs",
-    "check:sync": "esbuild scripts/sync-check.ts --bundle --platform=node --format=esm --outfile=.tmp/sync-check.mjs --log-level=error && node .tmp/sync-check.mjs"
+    "check:sync": "mkdir -p .tmp && esbuild scripts/sync-check.ts --bundle --platform=node --format=esm --outfile=.tmp/sync-check.mjs --log-level=error && node .tmp/sync-check.mjs"
   },
   "dependencies": {
     "@angular/common": "^21.2.0",

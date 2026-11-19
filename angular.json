@@ -118,7 +118,7 @@
               "src/global.scss"
             ],
             "scripts": [],
-            "karmaConfig": "karma.conf.js"
+            "browsers": "ChromeHeadlessNoSandbox"
           }
         }
       }
