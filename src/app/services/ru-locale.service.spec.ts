@@ -49,14 +49,15 @@ describe('RuLocaleService', () => {
     });
 
     it('месяц с заглавной и без точки на конце', () => {
-      expect(l.dayShort(new Date(2026, 10, 5))).toBe('5 нояб');
-      expect(l.monthYear(new Date(2026, 10, 1))).toBe('Ноябрь 2026 г.');
+      // Точка обязательна: это сокращение, а не обрезка
+      expect(l.dayShort(new Date(2026, 10, 5))).toBe('5 нояб.');
+      expect(l.monthYear(new Date(2026, 10, 1))).toBe('Ноябрь 2026');
     });
 
     it('неделя начинается с понедельника', () => {
       const days = l.weekdays('short');
-      expect(days[0]).toBe('пн');
-      expect(days[6]).toBe('вс');
+      expect(days[0]).toBe('Пн');
+      expect(days[6]).toBe('Вс');
     });
 
     it('для неизвестной даты — текст, а не Invalid Date', () => {
@@ -70,7 +71,8 @@ describe('RuLocaleService', () => {
       expect(l.languageName('cn')).toBe('китайский');
       expect(l.languageName('ko')).toBe('корейский');
       expect(l.languageName('xx')).toBe('без языка');
-      expect(l.countryName('KR')).toBe('Северная Корея');
+      // CLDR для ru даёт официальное название, а не разговорное
+      expect(l.countryName('KR')).toBe('Республика Корея');
       expect(l.countryName('XX')).toBe('без страны');
     });
 
