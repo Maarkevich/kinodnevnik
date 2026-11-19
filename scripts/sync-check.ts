@@ -1,8 +1,10 @@
 /**
- * Интеграционный прогон SyncService на fake-IndexedDB.
+ * Интеграционный прогон правил слияния на fake-IndexedDB.
+ * Запуск: npm run check:sync (браузер не нужен).
+ * Пути относительные — скрипт должен работать не только в песочнице автора.
  * Проверяет ровно то, что требует спецификация 9.2–9.4 и 16.
  */
-import { SyncService } from '/var/minis/workspace/kd/src/app/services/sync.service';
+import { SyncService } from '../src/app/services/sync.service';
 
 class FakeDb {
   stores = new Map();
